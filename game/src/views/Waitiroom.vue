@@ -2,23 +2,12 @@
   <div class="waiting">
     <div class="container boxCreateRoom">
     <div class="row">
-      <div class="col-sm">
+      <div class="col-sm" v-for="(player, index) in players" :key="index">
         <div class="card" style="width: 19rem;">
-          <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+          <img class="card-img-top" :src="player.avatar" alt="avatar mana nih">
           <div class="card-body">
-            <p class="card-text">
-              HARLES BAYU
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm">
-        <div class="card" style="width: 19rem;">
-          <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
-          <div class="card-body">
-            <p class="card-text">
-              HARLES BAYU
+            <p class="card-text" style="text-align:center; text-transform: uppercase; color: #F56162; font-weight: bold;">
+              {{ player.username }}
             </p>
           </div>
         </div>
@@ -30,13 +19,61 @@
 </template>
 
 <script>
+
+  import db from "../../config/config.js"
+
   export default {
     name: 'waitingroom',
     components: {},
+    data: function () {
+      return {
+        players: [],
+        statusGame: false
+      }
+    },
+    created() {
+      this.documentReady()
+    },
     methods: {
+      documentReady: function () {
+        let self = this
+        var starCountRef = db.ref(
+          "room/" + localStorage.getItem("room") + "/users"
+        );
+
+        starCountRef.on("value", function(snapshot) {
+          self.userId = localStorage.getItem("id")
+          self.players = []
+          let keys = []
+          let values = []
+
+          keys = Object.keys(snapshot.val())
+          values = Object.values(snapshot.val())
+          
+          if (keys.length == 2) {
+            self.statusGame = true
+          } 
+
+          keys.forEach((key, index) => {
+            self.players.push({
+              id: key,
+              username: values[index].username,
+              avatar: values[index].avatar
+            })
+          })
+
+        })
+
+      },
       btnWaitingRoom: function () {
-        // console.log('masuk')
-        this.$router.push("game")
+        
+        if(this.statusGame == true){
+          this.$router.push("game")
+        } else {
+          alert("PEMAIN KURANG SATU LAGI BOSSS !!!")
+        }
+
+        
       }
     }
   }
@@ -60,7 +97,7 @@
     top: 50%;
     left: 50%;
     position: absolute;
-    margin-top: -180px;
+    margin-top: -250px;
     margin-left: -350px;
   }
 </style>
