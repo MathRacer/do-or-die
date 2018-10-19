@@ -144,7 +144,6 @@
             } else {
               this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0]] = true;
               this.playerBoard[tempcoordinat[1]][tempcoordinat[0] - 1] = false
-               
             }
           }
           this.playerDirection = "";
