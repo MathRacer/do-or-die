@@ -1,9 +1,10 @@
 <template>
   <div class="container">
 
-    <div class="row border" v-for="(y, yindex) in boards" :key="yindex">
-      <div class="col-sm border game00" v-for="(x, xindex) in y" :key="xindex">
+    <div class="row" v-for="(y, yindex) in boards" :key="yindex">
+      <div class="col-sm  game00" v-for="(x, xindex) in y" :key="xindex">
         {{boards[yindex][xindex]}}
+        <img class= "icon" v-if="playerBoard[yindex][xindex]" src="http://icons.iconarchive.com/icons/icons-land/transporter/256/Car-Front-Red-icon.png">
       </div>
     </div>
 
@@ -23,23 +24,38 @@
         width: 3,
         playerDirection: "",
         boards: [
-          ["00", "01", "02"],
-          ["10", "11", "12"],
-          ["20", "21", "22"],
-          ["30", "31", "32"],
-          ["40", "41", "42"],
-          ["50", "51", "52"],
-          ["60", "61", "62"],
-          ["70", "71", "72"],
-          ["80", "81", "82"],
-          ["90", "91", "92"]
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""],
+          ["", "", ""]
         ],
-        player1: [1, 0], //x,y
+        playerWithId: {
+          location: [1,0],
+          id: localStorage.getItem('playerId')
+        },
         yborder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         xborder: [0, 1, 2],
         iconCar: [{
           title: `<i class="fas fa-car fa-6x"></i>`
-        }]
+        }],
+        playerBoard: [
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+         [false, false, false],
+        ]
       };
     },
     created() {
@@ -51,100 +67,84 @@
           this.boards[i][trapcoordinate2] = "BOOM";
         }
       }
+      this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0]] = true;
     },
     methods: {
       isTraps: function () {
-        return this.boards[this.player1[1]][this.player1[0]] == "BOOM";
+        return this.boards[this.playerWithId.location[1]][this.playerWithId.location[0]] == "BOOM";
       }
     },
     watch: {
       playerDirection: function (value) {
         value = value.toLowerCase();
-
         if (value == "a") {
-          let nextmove = this.player1[0] - 1;
-          let tempcoordinat = this.player1;
+          let nextmove = this.playerWithId.location[0] - 1;
+          let tempcoordinat = this.playerWithId.location;
 
           if (this.xborder.indexOf(nextmove) != -1) {
-            this.player1[0] = nextmove;
+            this.playerWithId.location[0] = nextmove;
 
             if (this.isTraps()) {
-              this.boards[this.player1[1]][this.player1[0] + 1] =
-                `${
-              this.player1[1]
-            }${this.player1[0]}`;
-              this.player1 = [1, 0];
+              this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0] + 1] = false
+              
+              this.playerWithId.location = [1, 0];
             } else {
-              this.boards[this.player1[1]][this.player1[0]] = "x";
-              this.boards[tempcoordinat[1]][tempcoordinat[0] + 1] =
-                `${[
-              tempcoordinat[1]
-            ]}${[tempcoordinat[0] + 1]}`;
+              this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0]] = true;
+              this.playerBoard[tempcoordinat[1]][tempcoordinat[0] + 1] = false;
+                
             }
           }
           this.playerDirection = "";
         } else if (value == "s") {
-          let nextmove = this.player1[1] + 1;
-          let tempcoordinat = this.player1;
+          let nextmove = this.playerWithId.location[1] + 1;
+          let tempcoordinat = this.playerWithId.location;
           if (this.yborder.indexOf(nextmove) != -1) {
-            this.player1[1] = nextmove;
+            this.playerWithId.location[1] = nextmove;
 
             if (this.isTraps()) {
-              this.boards[this.player1[1] - 1][this.player1[0]] =
-                `${
-              this.player1[1]
-            }${this.player1[0]}`;
-              this.player1 = [1, 0];
+              this.playerBoard[this.playerWithId.location[1] - 1][this.playerWithId.location[0]] = false
+                
+              this.playerWithId.location = [1, 0];
             } else {
-              this.boards[this.player1[1]][this.player1[0]] = "x";
-              this.boards[tempcoordinat[1] - 1][tempcoordinat[0]] =
-                `${[
-              tempcoordinat[1] - 1
-            ]}${[tempcoordinat[0]]}`;
+              this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0]] = true;
+              this.playerBoard[tempcoordinat[1] - 1][tempcoordinat[0]] = false
+              
             }
           }
           this.playerDirection = "";
         } else if (value == "w") {
-          let nextmove = this.player1[1] - 1;
-          let tempcoordinat = this.player1;
+          let nextmove = this.playerWithId.location[1] - 1;
+          let tempcoordinat = this.playerWithId.location;
 
           if (this.yborder.indexOf(nextmove) != -1) {
-            this.player1[1] = nextmove;
+            this.playerWithId.location[1] = nextmove;
 
             if (this.isTraps()) {
-              this.boards[this.player1[1] + 1][this.player1[0]] =
-                `${
-              this.player1[1]
-            }${this.player1[0]}`;
-              this.player1 = [1, 0];
+              this.playerBoard[this.playerWithId.location[1] + 1][this.playerWithId.location[0]] = false
+              
+              this.playerWithId.location = [1, 0];
             } else {
-              this.boards[this.player1[1]][this.player1[0]] = "x";
-              this.boards[tempcoordinat[1] + 1][tempcoordinat[0]] =
-                `${[
-              tempcoordinat[1] + 1
-            ]}${[tempcoordinat[0]]}`;
+              this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0]] = true;
+              this.playerBoard[tempcoordinat[1] + 1][tempcoordinat[0]] = false
+              
             }
           }
           this.playerDirection = "";
         } else if (value == "d") {
-          let nextmove = this.player1[0] + 1;
-          let tempcoordinat = this.player1;
+          let nextmove = this.playerWithId.location[0] + 1;
+          let tempcoordinat = this.playerWithId.location;
 
           if (this.xborder.indexOf(nextmove) != -1) {
-            this.player1[0] = nextmove;
+            this.playerWithId.location[0] = nextmove;
 
             if (this.isTraps()) {
-              this.boards[this.player1[1]][this.player1[0] - 1] =
-                `${
-              this.player1[1]
-            }${this.player1[0]}`;
-              this.player1 = [1, 0];
+              this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0] - 1] = false
+             
+              this.playerWithId.location = [1, 0];
             } else {
-              this.boards[this.player1[1]][this.player1[0]] = "x";
-              this.boards[tempcoordinat[1]][tempcoordinat[0] - 1] =
-                `${[
-              tempcoordinat[1]
-            ]}${[tempcoordinat[0] - 1]}`;
+              this.playerBoard[this.playerWithId.location[1]][this.playerWithId.location[0]] = true;
+              this.playerBoard[tempcoordinat[1]][tempcoordinat[0] - 1] = false
+               
             }
           }
           this.playerDirection = "";
@@ -156,5 +156,22 @@
   };
 </script>
 
-<style>
+<style scoped>
+
+  .game00 {
+    background-color: grey;
+    width: 30px;
+    height: 60px;
+    border-left: solid;
+    border-right: solid;
+    text-align: center;
+  }
+
+  .icon {
+    width: 100px;
+    z-index: 1000 ;
+    position: relative;
+    bottom: 30px;
+  }
+
 </style>
